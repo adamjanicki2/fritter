@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/stylesheets/style.css">
   <script src="/scripts/freet.js"></script>
   <script src="/scripts/user.js"></script>
+  <script src="/scripts/comment.js"></script>
   <script src="/scripts/index.js"></script>
 </head>
 
@@ -19,6 +20,40 @@
     <section id="operations-container">
       <h2>Operations:</h2>
       <div class="scrollbox">
+        <!-- BEGIN CUSTOM TESTING -->
+        <form id="create-comment">
+          <h3>Create Comment</h3>
+          <div>
+            <label for="parentId">Parent ID:</label>
+            <input id="parentId" name="parentId">
+          </div>
+          <div>
+            <label for="parentType">Parent Type ("freet" | "comment"):</label>
+            <input id="parentType" name="parentType">
+          </div>
+          <div>
+            <label for="content">Content:</label>
+            <input id="content" name="content">
+          </div>
+          <input type="submit" value="Create Comment">
+        </form>
+        <form id="view-comments-by-parent">
+          <h3>View Comments By Parent</h3>
+          <div>
+            <label for="parentId">Parent ID:</label>
+            <input id="parentId" name="parentId">
+          </div>
+          <input type="submit" value="View Comments By Parent">
+        </form>
+        <form id="delete-comment">
+          <h3>Delete Comment</h3>
+          <div>
+            <label for="id">ID:</label>
+            <input id="id" name="id">
+          </div>
+          <input type="submit" value="Delete Comment">
+        </form>
+        <!-- BEGIN STOCK TESTING -->
         <form id="create-user">
           <h3>Create User</h3>
           <div>
