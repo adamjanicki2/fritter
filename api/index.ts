@@ -12,6 +12,10 @@ import * as userValidator from "../user/middleware";
 import { userRouter } from "../user/router";
 import { freetRouter } from "../freet/router";
 import { commentRouter } from "../comment/router";
+import { followerRouter } from "../follower/router";
+import { likeRouter } from "../like/router";
+import { goodSportScoreRouter } from "../good_sport_score/router";
+import { flagRouter } from "../flag/router";
 
 // Load environmental variables
 dotenv.config({});
@@ -80,6 +84,10 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/users", userRouter);
 app.use("/api/freets", freetRouter);
 app.use("/api/comments", commentRouter);
+app.use("/api/flags", flagRouter);
+app.use("/api/followers", followerRouter);
+app.use("/api/likes", likeRouter);
+app.use("/api/goodSportScores", goodSportScoreRouter);
 
 // Catch all the other routes and display error message
 app.all("*", (req: Request, res: Response) => {

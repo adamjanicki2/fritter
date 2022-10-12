@@ -45,18 +45,3 @@ export const isValidCommentModifier = async (
 
   next();
 };
-
-/**
- * Checks if valid parentType is in req.body
- */
-export const isValidParentType = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { parentType } = req.body;
-  if (parentType !== "comment" && parentType !== "freet") {
-    return res.status(400).json({ message: "Wrong parentType" });
-  }
-  next();
-};
