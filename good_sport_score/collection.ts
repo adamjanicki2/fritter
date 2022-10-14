@@ -56,17 +56,17 @@ class GoodSportScoreCollection {
    * a few ideas were used from the above source, which include some preprocessing on the text such as
    * removing stop words, and getting rid of contracions
    *
-   * @param goodSportScoreId the id of the score to update
+   * @param userId the id of the user's score to update
    * @param newItem true if the item was just posted, false if just deleted
    * @param content the content of the item
    */
   static async updateOne(
-    goodSportScoreId: Types.ObjectId | string,
+    userId: Types.ObjectId | string,
     newItem: boolean,
     content: string
   ): Promise<HydratedDocument<GoodSportScore>> {
     const textScore = getSentimentScore(content);
-    const score = await GoodSportScoreModel.findById(goodSportScoreId);
+    const score = await GoodSportScoreModel.findOne({ userId });
     score.score = newItem ? score.score + textScore : score.score - textScore;
     await score.save();
     return score;

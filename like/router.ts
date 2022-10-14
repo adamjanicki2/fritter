@@ -15,6 +15,7 @@ const router = express.Router();
  * @return {boolean} - whether the user has liked an item
  * @throws {400} - If parentId is not given
  * @throws {403} if user is not logged in
+ * @throws {404} if parent does not exist
  *
  */
 router.get(
@@ -22,6 +23,7 @@ router.get(
   [
     userValidator.isUserLoggedIn,
     middleware.isInfoSupplied("query", ["parentId"]),
+    middleware.doesParentExist("query"),
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.session.userId as string;
@@ -43,10 +45,15 @@ router.get(
  * @return {HydratedDocument<Like>} - The created like
  * @throws {403} - If the user is not logged in
  * @throws {400} if invalid parent type
+ * @throws {404} if parent does not exist
  */
 router.post(
   "/",
-  [userValidator.isUserLoggedIn, middleware.isValidParentType("body")],
+  [
+    userValidator.isUserLoggedIn,
+    middleware.isValidParentType("body"),
+    middleware.doesParentExist("body"),
+  ],
   async (req: Request, res: Response) => {
     const userId = req.session.userId as string;
     const { parentId, parentType } = req.body;

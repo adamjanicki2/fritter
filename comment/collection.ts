@@ -1,3 +1,5 @@
+import FreetCollection from "freet/collection";
+import GoodSportScoreCollection from "good_sport_score/collection";
 import type { HydratedDocument, Types } from "mongoose";
 import type { Comment } from "./model";
 import CommentModel from "./model";
@@ -28,6 +30,10 @@ class CommentCollection {
       flags: 0,
     });
     await comment.save();
+    if (parentType === "freet") {
+      FreetCollection.incrementStats(parentId, "comments", 1);
+    }
+    await GoodSportScoreCollection.updateOne(authorId, true, content);
     return comment.populate("authorId");
   }
 
@@ -57,7 +63,7 @@ class CommentCollection {
   static async findById(
     commentId: Types.ObjectId | string
   ): Promise<HydratedDocument<Comment>> {
-    return CommentModel.findById(commentId).populate(["authorId", "parentId"]);
+    return CommentModel.findById(commentId).populate("authorId");
   }
 
   /**
@@ -67,7 +73,19 @@ class CommentCollection {
    * @return {Promise<Boolean>} - true if the comment has been deleted, false otherwise
    */
   static async deleteOne(commentId: Types.ObjectId | string): Promise<boolean> {
-    const deletedComment = await CommentModel.deleteOne({ _id: commentId });
+    const deletedComment = await CommentModel.findOneAndDelete({
+      _id: commentId,
+    });
+    const parentType = deletedComment?.parentType;
+    if (parentType === "freet") {
+      FreetCollection.incrementStats(deletedComment.parentId, "comments", -1);
+    }
+    deletedComment &&
+      (await GoodSportScoreCollection.updateOne(
+        deletedComment.authorId,
+        false,
+        deletedComment.content
+      ));
     return deletedComment !== null;
   }
 
@@ -78,6 +96,23 @@ class CommentCollection {
    */
   static async deleteMany(authorId: Types.ObjectId | string): Promise<void> {
     await CommentModel.deleteMany({ authorId });
+  }
+
+  /**
+   * Update comment stats
+   *
+   * @param commentId id of the comment
+   * @param stat to increment
+   * @param inc 1 or -1
+   */
+  static async incrementStats(
+    commentId: Types.ObjectId | string,
+    stat: "likes" | "flags",
+    inc: 1 | -1
+  ): Promise<void> {
+    const comment = await CommentModel.findById(commentId);
+    comment[stat] += inc;
+    await comment.save();
   }
 }
 

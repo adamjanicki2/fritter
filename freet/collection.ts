@@ -2,16 +2,21 @@ import type { HydratedDocument, Types } from "mongoose";
 import type { Freet } from "./model";
 import FreetModel from "./model";
 import UserCollection from "../user/collection";
+import GoodSportScoreCollection from "good_sport_score/collection";
 
-/**
- * This files contains a class that has the functionality to explore freets
- * stored in MongoDB, including adding, finding, updating, and deleting freets.
- * Feel free to add additional operations in this file.
- *
- * Note: HydratedDocument<Freet> is the output of the FreetModel() constructor,
- * and contains all the information in Freet. https://mongoosejs.com/docs/typescript.html
- */
+type FreetStat = "likes" | "flags" | "comments";
 class FreetCollection {
+  /**
+   * get a freet by id
+   *
+   * @param freetId of the freet to find
+   * @returns the freet or null if dne
+   */
+  static async findById(
+    freetId: Types.ObjectId | string
+  ): Promise<HydratedDocument<Freet>> {
+    return (await FreetModel.findById(freetId)).populated("authorId");
+  }
   /**
    * Add a freet to the collection
    *
@@ -34,6 +39,7 @@ class FreetCollection {
       flags: 0,
     });
     await freet.save(); // Saves freet to MongoDB
+    await GoodSportScoreCollection.updateOne(authorId, true, content);
     return freet.populate("authorId");
   }
 
@@ -97,7 +103,13 @@ class FreetCollection {
    * @return {Promise<Boolean>} - true if the freet has been deleted, false otherwise
    */
   static async deleteOne(freetId: Types.ObjectId | string): Promise<boolean> {
-    const freet = await FreetModel.deleteOne({ _id: freetId });
+    const freet = await FreetModel.findOneAndDelete({ _id: freetId });
+    freet &&
+      (await GoodSportScoreCollection.updateOne(
+        freet.authorId,
+        false,
+        freet.content
+      ));
     return freet !== null;
   }
 
@@ -108,6 +120,23 @@ class FreetCollection {
    */
   static async deleteMany(authorId: Types.ObjectId | string): Promise<void> {
     await FreetModel.deleteMany({ authorId });
+  }
+
+  /**
+   * Update freet stats
+   *
+   * @param freetId id of the freet
+   * @param stat to increment
+   * @param inc 1 or -1
+   */
+  static async incrementStats(
+    freetId: Types.ObjectId | string,
+    stat: FreetStat,
+    inc: 1 | -1
+  ): Promise<void> {
+    const freet = await FreetModel.findById(freetId);
+    freet[stat] += inc;
+    await freet.save();
   }
 }
 

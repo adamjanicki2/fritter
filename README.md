@@ -30,6 +30,8 @@
 **Throws**
 
 - `400` if incorrent parent type supplied
+- `403` if user not logged in
+- `404` if parent does not exist
 - `413`if content is too long
 
 #### `DELETE /api/comments?commentId=COMMENTID` - Delete an existing comment
@@ -93,6 +95,7 @@
 
 - `400` if parentId not provided
 - `403` if user not signed in
+- `404` if parent does not exist
 
 #### `POST /api/likes` - create a new like
 
@@ -109,6 +112,7 @@
 
 - `403` if user not logged in
 - `400` if incorrect parentType supplied
+- `404` if parent does not exist
 
 #### `DELETE /api/likes?likeId=LIKEID` - delete a like
 
@@ -133,6 +137,7 @@
 
 - `400` if parentId not provided
 - `403` if user not signed in
+- `404` if parent does not exist
 
 #### `POST /api/flags` - create a new flag
 
@@ -149,6 +154,7 @@
 
 - `403` if user not logged in
 - `400` if incorrect parentType supplied
+- `404` if parent does not exist
 
 #### `DELETE /api/flags?flagId=FLAGID` - delete a flag
 

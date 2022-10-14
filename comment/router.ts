@@ -1,10 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import CommentCollection from "./collection";
+import FreetCollection from "freet/collection";
 import * as userValidator from "../user/middleware";
 import * as util from "./util";
 import * as middleware from "../common/middleware";
 import * as commentValidator from "./middleware";
+import * as freetValidator from "../freet/middleware";
 
 const router = express.Router();
 
@@ -39,6 +41,7 @@ router.get(
  * @param {"comment" | "freet"} parentType - the type of the parent
  * @return {CommentResponse} - The created comment
  * @throws {403} - If the user is not logged in
+ * @throws {404} if the parent does not exist
  * @throws {400} - If the comment content is empty or a stream of empty spaces or if the parentType is wrong
  * @throws {413} - If the comment content is more than 140 characters long
  */
@@ -48,6 +51,7 @@ router.post(
     userValidator.isUserLoggedIn,
     middleware.isValidContent,
     middleware.isValidParentType("body"),
+    middleware.doesParentExist("body"),
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ""; // Will not be an empty string since its validated in isUserLoggedIn
@@ -58,6 +62,9 @@ router.post(
       parentType,
       content
     );
+    if (parentType === "freet") {
+      await FreetCollection.incrementStats(parentId, "comments", 1);
+    }
 
     res.status(201).json({
       message: "Your comment was created successfully.",
@@ -74,7 +81,7 @@ router.post(
  * @return {string} - A success message
  * @throws {403} - If the user is not logged in or is not the author of
  *                 the comment
- * @throws {404} - If the freetId is not valid
+ * @throws {404} - If the commentId is not valid
  */
 router.delete(
   "/:commentId?",

@@ -1,6 +1,7 @@
 import type { HydratedDocument, Types } from "mongoose";
 import type { Like } from "./model";
 import LikeModel from "./model";
+import { PARENT_TO_INCREMENT_FUNC } from "../common/util";
 
 class LikeCollection {
   /**
@@ -21,6 +22,7 @@ class LikeCollection {
       parentId,
       parentType,
     });
+    PARENT_TO_INCREMENT_FUNC[parentType](parentId, "likes", 1);
     await Like.save();
     return Like.populate("userId");
   }
@@ -47,9 +49,15 @@ class LikeCollection {
    * @return {Promise<Boolean>} - true if the Like has been deleted, false otherwise
    */
   static async deleteOne(LikeId: Types.ObjectId | string): Promise<boolean> {
-    const deletedLike = await LikeModel.deleteOne({
+    const deletedLike = await LikeModel.findOneAndDelete({
       _id: LikeId,
     });
+    deletedLike !== null &&
+      PARENT_TO_INCREMENT_FUNC[deletedLike.parentType](
+        deletedLike.parentId,
+        "likes",
+        -1
+      );
     return deletedLike !== null;
   }
 }

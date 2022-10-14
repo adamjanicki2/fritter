@@ -1,6 +1,9 @@
+import CommentCollection from "../comment/collection";
 import type { Request, Response, NextFunction } from "express";
+import FreetCollection from "../freet/collection";
 
 type RequestInformation = "params" | "body" | "query";
+type ParentType = "comment" | "freet";
 
 /**
  * Checks if the content of the freet/comment in req.body is valid, i.e not a stream of empty
@@ -61,6 +64,32 @@ export const isInfoSupplied = (
           message: `field '${field}' not supplied in req.${reqInfoType}`,
         });
       }
+    }
+    next();
+  };
+};
+
+const PARENT_TO_FIND_OPERATION = {
+  comment: CommentCollection.findById,
+  freet: FreetCollection.findById,
+} as const;
+
+/**
+ * Determine whether parent exists
+ *
+ * @param parentType
+ * @param reqInfoType
+ * @returns callback for validation
+ */
+export const doesParentExist = (reqInfoType: "body" | "params" | "query") => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const id = req[reqInfoType].parentId as string;
+    const freet = PARENT_TO_FIND_OPERATION["freet"](id);
+    const comment = PARENT_TO_FIND_OPERATION["comment"](id);
+    if (!freet && !comment) {
+      return res
+        .status(404)
+        .json({ message: `parentId: '${id}' does not exist!` });
     }
     next();
   };

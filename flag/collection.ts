@@ -1,3 +1,4 @@
+import { PARENT_TO_INCREMENT_FUNC } from "../common/util";
 import type { HydratedDocument, Types } from "mongoose";
 import type { Flag } from "./model";
 import FlagModel from "./model";
@@ -16,13 +17,14 @@ class FlagCollection {
     parentId: Types.ObjectId | string,
     parentType: "comment" | "freet"
   ): Promise<HydratedDocument<Flag>> {
-    const Flag = new FlagModel({
+    const flag = new FlagModel({
       userId,
       parentId,
       parentType,
     });
-    await Flag.save();
-    return Flag.populate("userId");
+    PARENT_TO_INCREMENT_FUNC[parentType](parentId, "flags", 1);
+    await flag.save();
+    return flag.populate("userId");
   }
 
   /**
@@ -47,9 +49,15 @@ class FlagCollection {
    * @return {Promise<Boolean>} - true if the Flag has been deleted, false otherwise
    */
   static async deleteOne(flagId: Types.ObjectId | string): Promise<boolean> {
-    const deletedFlag = await FlagModel.deleteOne({
+    const deletedFlag = await FlagModel.findOneAndDelete({
       _id: flagId,
     });
+    deletedFlag !== null &&
+      PARENT_TO_INCREMENT_FUNC[deletedFlag.parentType](
+        deletedFlag.parentId,
+        "flags",
+        -1
+      );
     return deletedFlag !== null;
   }
 }

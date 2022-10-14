@@ -1,3 +1,5 @@
+import CommentCollection from "comment/collection";
+import FreetCollection from "freet/collection";
 import moment from "moment";
 
 /**
@@ -8,3 +10,8 @@ import moment from "moment";
  */
 export const formatDate = (date: Date): string =>
   moment(date).format("MMMM Do YYYY, h:mm:ss a");
+
+export const PARENT_TO_INCREMENT_FUNC = {
+  comment: CommentCollection.incrementStats,
+  freet: FreetCollection.incrementStats,
+} as const;
