@@ -1,44 +1,60 @@
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
-// import FlagCollection from "./collection";
 import * as userValidator from "../user/middleware";
-// import * as util from "./util";
+import FlagCollection from "./collection";
 import * as middleware from "../common/middleware";
-// import * as flagValidator from "./middleware";
 
 const router = express.Router();
 
 /**
- * Get flags by parent
+ * Check if user has flagged an item
  *
  * @name GET /api/flags?parentId=id
+ * @param {string} parentId the id of the item
  *
- * @return {FlagResponse[]} - An array of comments created under parentId
+ * @return {boolean} - whether the user has flaggedd an item
  * @throws {400} - If parentId is not given
+ * @throws {403} if user is not logged in
  *
  */
-router.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  // Check if authorId query parameter was supplied
-  if (!req.query.parentId) {
-    return res.status(400).json({ message: "No parentId supplied!" });
+router.get(
+  "/:parentId?",
+  [
+    userValidator.isUserLoggedIn,
+    middleware.isInfoSupplied("query", ["parentId"]),
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.session.userId as string;
+    const exists = FlagCollection.findByUserId(
+      userId,
+      req.query.parentId as string
+    );
+    res.status(200).json({ exists });
   }
-});
+);
 
 /**
- * Create a new flag
+ * Create a new flag.
  *
  * @name POST /api/flags
  *
  * @param {string} parentId - the id of the parent
- * @return {FlagResponse} - The created comment
+ * @param {"comment" | "freet"} parentType - the type of the parent
+ * @return {HydratedDocument<Flag>} - The created flag
  * @throws {403} - If the user is not logged in
+ * @throws {400} if wrong parentType supplied
  */
 router.post(
   "/",
-  [userValidator.isUserLoggedIn, middleware.isValidParentType],
+  [userValidator.isUserLoggedIn, middleware.isValidParentType("body")],
   async (req: Request, res: Response) => {
-    const userId = (req.session.userId as string) ?? ""; // Will not be an empty string since its validated in isUserLoggedIn
+    const userId = req.session.userId as string;
     const { parentId, parentType } = req.body;
+    const flag = await FlagCollection.addOne(userId, parentId, parentType);
+    res.status(201).json({
+      message: "You flaggedd the item successfully.",
+      flag,
+    });
   }
 );
 
@@ -48,22 +64,22 @@ router.post(
  * @name DELETE /api/flags/:id
  *
  * @return {string} - A success message
- * @throws {403} - If the user is not logged in or is not the author of
- *                 the flag
- * @throws {404} - If the flagId is not valid
+ * @throws {403} - If the user is not logged in or is not the flagger
+ * @throws {400} - if the flag id is not supplied
  */
 router.delete(
   "/:flagId?",
   [
     userValidator.isUserLoggedIn,
-    // flagValidator.doesFlagExist,
-    // flagValidator.isValidFlagModifier,
+    middleware.isInfoSupplied("params", ["flagId"]),
   ],
   async (req: Request, res: Response) => {
-    // await FlagCollection.deleteOne(req.params.commentId);
-    // res.status(200).json({
-    //   message: "Your flag was deleted successfully.",
-    // });
+    const flagId = req.params.flagId;
+    const userId = req.session.userId as string;
+    await FlagCollection.deleteOne(flagId);
+    res.status(200).json({
+      message: "Your flag was deleted successfully.",
+    });
   }
 );
 

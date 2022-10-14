@@ -2,11 +2,17 @@
 
 ## API route Documentation
 
+### New endpoints
+
 #### `GET /api/comments?parentId=PARENTID` - Get all comments under a parent
 
 **Returns:**
 
 - An array of all the comments on the given parent
+
+**Throws**
+
+- `400` if no parentId given
 
 #### `POST /api/comments` - Post a comment
 
@@ -21,11 +27,155 @@
 - A success message
 - A object with the created comment
 
-#### `DELETE /api/comments` - Delete an existing comment
+**Throws**
+
+- `400` if incorrent parent type supplied
+- `413`if content is too long
+
+#### `DELETE /api/comments?commentId=COMMENTID` - Delete an existing comment
 
 **Returns**
 
 - A success message
+
+**Throws**
+
+- `400` if no commentId supplied
+
+---
+
+#### `GET /api/followers?userId=USERID` - Get follower info for a user
+
+**Returns**
+
+- Follower info for the given user; i.e. number of followers and followees
+
+**Throws**
+
+- `400` if userId not supplied
+
+#### `POST /api/followers` - Follow a user
+
+**Body**
+
+- `follower` _{string}_ - the id of the follower
+- `followee` _{string}_ - the id of the followee
+
+**Returns**
+
+- the newly created follower entry
+
+**Throws**
+
+- `403` if user not logged in
+- `404` if if user a already follows user b
+
+#### `DELETE /api/followers?followerId=FOLLOWERID` - delete a follower
+
+**Returns**
+
+- a success message
+
+**Throws**
+
+- `403` if user not logged in
+- `400` if no followerId supplied
+
+---
+
+#### `GET /api/likes?parentId=PARENTID` - check if current user has liked an item
+
+**Returns**
+
+- boolean whether or not the current user has liked the item
+
+**Throws**
+
+- `400` if parentId not provided
+- `403` if user not signed in
+
+#### `POST /api/likes` - create a new like
+
+**Body**
+
+- `parentId` _{string}_ - the id of the item to like
+- `parentType` _{"comment" | "freet"}_ - the type of parent
+
+**Returns**
+
+- the newly created like
+
+**Throws**
+
+- `403` if user not logged in
+- `400` if incorrect parentType supplied
+
+#### `DELETE /api/likes?likeId=LIKEID` - delete a like
+
+**Returns**
+
+- a success message
+
+**Throws**
+
+- `403` if user not logged in
+- `400` if no likeId supplied
+
+---
+
+#### `GET /api/flags?parentId=PARENTID` - check if current user has flagged an item
+
+**Returns**
+
+- boolean whether or not the current user has flagged the item
+
+**Throws**
+
+- `400` if parentId not provided
+- `403` if user not signed in
+
+#### `POST /api/flags` - create a new flag
+
+**Body**
+
+- `parentId` _{string}_ - the id of the item to flag
+- `parentType` _{"comment" | "freet"}_ - the type of parent
+
+**Returns**
+
+- the newly created flag
+
+**Throws**
+
+- `403` if user not logged in
+- `400` if incorrect parentType supplied
+
+#### `DELETE /api/flags?flagId=FLAGID` - delete a flag
+
+**Returns**
+
+- a success message
+
+**Throws**
+
+- `403` if user not logged in
+- `400` if no flagId supplied
+
+---
+
+#### `GET /api/goodSportScores` - get the signed-in user's good sport score
+
+**Returns**
+
+- a user's good sport score
+
+**Throws**
+
+- `403` if user is not logged in
+
+---
+
+### Starter code endpoints
 
 #### `GET /`
 

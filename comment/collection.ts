@@ -28,7 +28,6 @@ class CommentCollection {
       flags: 0,
     });
     await comment.save();
-    await comment.populate("parentId");
     return comment.populate("authorId");
   }
 
@@ -45,8 +44,7 @@ class CommentCollection {
     // Retrieves comments and sorts them from most to least recent
     return CommentModel.find({ parentId })
       .sort({ dateCreated: -1 })
-      .populate("authorId")
-      .populate("parentId");
+      .populate("authorId");
   }
 
   /**

@@ -17,17 +17,17 @@ const router = express.Router();
  * @throws {400} - If parentId is not given
  *
  */
-router.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  // Check if authorId query parameter was supplied
-  if (!req.query.parentId) {
-    return res.status(400).json({ message: "No parentId supplied!" });
+router.get(
+  "/",
+  [middleware.isInfoSupplied("query", ["parentId"])],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const comments = await CommentCollection.findByParentId(
+      req.query.parentId as string
+    );
+    const response = comments.map(util.constructCommentResponse);
+    return res.status(200).json(response);
   }
-  const comments = await CommentCollection.findByParentId(
-    req.query.parentId as string
-  );
-  const response = comments.map(util.constructCommentResponse);
-  return res.status(200).json(response);
-});
+);
 
 /**
  * Create a new comment.
@@ -47,7 +47,7 @@ router.post(
   [
     userValidator.isUserLoggedIn,
     middleware.isValidContent,
-    middleware.isValidParentType,
+    middleware.isValidParentType("body"),
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ""; // Will not be an empty string since its validated in isUserLoggedIn
