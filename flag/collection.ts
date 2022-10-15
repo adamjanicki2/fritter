@@ -2,6 +2,7 @@ import { PARENT_TO_INCREMENT_FUNC } from "../common/util";
 import type { HydratedDocument, Types } from "mongoose";
 import type { Flag } from "./model";
 import FlagModel from "./model";
+import type { DeleteFilter } from "../common/util";
 
 class FlagCollection {
   /**
@@ -45,12 +46,17 @@ class FlagCollection {
   /**
    * Delete a Flag by id
    *
-   * @param {string} flagId - The id of Flag to delete
+   * @param {string} userId - The id of user
+   * @param {string} parentId - the id of the parent
    * @return {Promise<Boolean>} - true if the Flag has been deleted, false otherwise
    */
-  static async deleteOne(flagId: Types.ObjectId | string): Promise<boolean> {
+  static async deleteOne(
+    userId: Types.ObjectId | string,
+    parentId: Types.ObjectId | string
+  ): Promise<boolean> {
     const deletedFlag = await FlagModel.findOneAndDelete({
-      _id: flagId,
+      userId,
+      parentId,
     });
     deletedFlag !== null &&
       PARENT_TO_INCREMENT_FUNC[deletedFlag.parentType](
@@ -59,6 +65,17 @@ class FlagCollection {
         -1
       );
     return deletedFlag !== null;
+  }
+
+  /**
+   * Delete entries for user
+   *
+   * @param filter the filter to find by
+   * @returns true if success else false
+   */
+  static async deleteMany(filter: DeleteFilter): Promise<boolean> {
+    const deleted = await FlagModel.deleteMany(filter);
+    return deleted !== null;
   }
 }
 

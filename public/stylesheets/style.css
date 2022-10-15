@@ -130,3 +130,11 @@ input[type="submit"]:hover {
   margin-top: 2rem;
   padding: 1rem;
 }
+
+hr {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  color: white;
+  border: 3px solid white;
+}

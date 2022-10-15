@@ -27,7 +27,7 @@ router.get(
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.session.userId as string;
-    const exists = FlagCollection.findByUserId(
+    const exists = await FlagCollection.findByUserId(
       userId,
       req.query.parentId as string
     );
@@ -45,7 +45,7 @@ router.get(
  * @return {HydratedDocument<Flag>} - The created flag
  * @throws {403} - If the user is not logged in
  * @throws {400} if wrong parentType supplied
- * @throws {404} if parent does not exist
+ * @throws {404} if parent does not exist, or already liked
  */
 router.post(
   "/",
@@ -53,6 +53,7 @@ router.post(
     userValidator.isUserLoggedIn,
     middleware.isValidParentType("body"),
     middleware.doesParentExist("body"),
+    middleware.doesDuplicateExist("flag", "body"),
   ],
   async (req: Request, res: Response) => {
     const userId = req.session.userId as string;
@@ -72,18 +73,18 @@ router.post(
  *
  * @return {string} - A success message
  * @throws {403} - If the user is not logged in or is not the flagger
- * @throws {400} - if the flag id is not supplied
+ * @throws {400} - if the parent id is not supplied
  */
 router.delete(
-  "/:flagId?",
+  "/:parentId?",
   [
     userValidator.isUserLoggedIn,
-    middleware.isInfoSupplied("params", ["flagId"]),
+    middleware.isInfoSupplied("params", ["parentId"]),
   ],
   async (req: Request, res: Response) => {
-    const flagId = req.params.flagId;
+    const parentId = req.params.parentId;
     const userId = req.session.userId as string;
-    await FlagCollection.deleteOne(flagId);
+    await FlagCollection.deleteOne(userId, parentId);
     res.status(200).json({
       message: "Your flag was deleted successfully.",
     });

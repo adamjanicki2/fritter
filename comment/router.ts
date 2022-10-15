@@ -1,12 +1,13 @@
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import CommentCollection from "./collection";
-import FreetCollection from "freet/collection";
+import FreetCollection from "../freet/collection";
 import * as userValidator from "../user/middleware";
 import * as util from "./util";
 import * as middleware from "../common/middleware";
 import * as commentValidator from "./middleware";
-import * as freetValidator from "../freet/middleware";
+import FlagCollection from "../flag/collection";
+import LikeCollection from "../like/collection";
 
 const router = express.Router();
 
@@ -62,9 +63,6 @@ router.post(
       parentType,
       content
     );
-    if (parentType === "freet") {
-      await FreetCollection.incrementStats(parentId, "comments", 1);
-    }
 
     res.status(201).json({
       message: "Your comment was created successfully.",
@@ -91,7 +89,12 @@ router.delete(
     commentValidator.isValidCommentModifier,
   ],
   async (req: Request, res: Response) => {
+    const { commentId } = req.params;
     await CommentCollection.deleteOne(req.params.commentId);
+    const filter = { parentId: commentId };
+    await CommentCollection.deleteMany(filter);
+    await FlagCollection.deleteMany(filter);
+    await LikeCollection.deleteMany(filter);
     res.status(200).json({
       message: "Your comment was deleted successfully.",
     });

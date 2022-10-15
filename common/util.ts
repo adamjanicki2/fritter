@@ -1,6 +1,7 @@
-import CommentCollection from "comment/collection";
-import FreetCollection from "freet/collection";
+import CommentCollection from "../comment/collection";
+import FreetCollection from "../freet/collection";
 import moment from "moment";
+import { Types } from "mongoose";
 
 /**
  * Encode a date as an unambiguous string
@@ -15,3 +16,9 @@ export const PARENT_TO_INCREMENT_FUNC = {
   comment: CommentCollection.incrementStats,
   freet: FreetCollection.incrementStats,
 } as const;
+
+export type DeleteFilter = {
+  parentId?: Types.ObjectId | string;
+  authorId?: Types.ObjectId | string;
+  userId?: Types.ObjectId | string;
+};

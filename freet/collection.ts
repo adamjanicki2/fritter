@@ -2,7 +2,7 @@ import type { HydratedDocument, Types } from "mongoose";
 import type { Freet } from "./model";
 import FreetModel from "./model";
 import UserCollection from "../user/collection";
-import GoodSportScoreCollection from "good_sport_score/collection";
+import GoodSportScoreCollection from "../good_sport_score/collection";
 
 type FreetStat = "likes" | "flags" | "comments";
 class FreetCollection {

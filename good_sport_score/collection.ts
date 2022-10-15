@@ -37,14 +37,12 @@ class GoodSportScoreCollection {
   /**
    * Delete a GoodSportScore by id
    *
-   * @param {string} goodSportScoreId - The id of GoodSportScore to delete
+   * @param {string} userId - The id of user's score to delete
    * @return {Promise<Boolean>} - true if the GoodSportScore has been deleted, false otherwise
    */
-  static async deleteOne(
-    goodSportScoreId: Types.ObjectId | string
-  ): Promise<boolean> {
+  static async deleteOne(userId: Types.ObjectId | string): Promise<boolean> {
     const deletedGoodSportScore = await GoodSportScoreModel.deleteOne({
-      _id: goodSportScoreId,
+      userId,
     });
     return deletedGoodSportScore !== null;
   }

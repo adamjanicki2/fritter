@@ -3,12 +3,8 @@ import { WordTokenizer, SentimentAnalyzer, PorterStemmer } from "natural";
 import { removeStopwords } from "stopword";
 
 // function to tokenize
-const tokenize = new WordTokenizer().tokenize;
-const calculateSentiment = new SentimentAnalyzer(
-  "English",
-  PorterStemmer,
-  "afinn"
-).getSentiment;
+const tokenizer = new WordTokenizer();
+const analyzer = new SentimentAnalyzer("English", PorterStemmer, "afinn");
 
 /**
  * Calculate sentiment score for a piece of text
@@ -18,9 +14,9 @@ const calculateSentiment = new SentimentAnalyzer(
  */
 export const getSentimentScore = (text: string): number => {
   const textWithOnlyLetters = removeSpecialChars(text.toLowerCase());
-  const tokens = tokenize(textWithOnlyLetters);
+  const tokens = tokenizer.tokenize(textWithOnlyLetters);
   const tokensWithoutStopwords = removeStopwords(tokens);
-  return calculateSentiment(tokensWithoutStopwords);
+  return analyzer.getSentiment(tokensWithoutStopwords);
 };
 
 /**

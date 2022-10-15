@@ -2,6 +2,7 @@ import type { HydratedDocument, Types } from "mongoose";
 import type { Like } from "./model";
 import LikeModel from "./model";
 import { PARENT_TO_INCREMENT_FUNC } from "../common/util";
+import type { DeleteFilter } from "../common/util";
 
 class LikeCollection {
   /**
@@ -45,12 +46,17 @@ class LikeCollection {
   /**
    * Delete a Like by id
    *
-   * @param {string} LikeId - The id of Like to delete
+   * @param {string} userId - The id of user
+   * @param {string} parentId the id of the parent
    * @return {Promise<Boolean>} - true if the Like has been deleted, false otherwise
    */
-  static async deleteOne(LikeId: Types.ObjectId | string): Promise<boolean> {
+  static async deleteOne(
+    userId: Types.ObjectId | string,
+    parentId: Types.ObjectId | string
+  ): Promise<boolean> {
     const deletedLike = await LikeModel.findOneAndDelete({
-      _id: LikeId,
+      userId,
+      parentId,
     });
     deletedLike !== null &&
       PARENT_TO_INCREMENT_FUNC[deletedLike.parentType](
@@ -59,6 +65,17 @@ class LikeCollection {
         -1
       );
     return deletedLike !== null;
+  }
+
+  /**
+   * Delete entries for user
+   *
+   * @param filter the filter to find by
+   * @returns true if success else false
+   */
+  static async deleteMany(filter: DeleteFilter): Promise<boolean> {
+    const deleted = await LikeModel.deleteMany(filter);
+    return deleted !== null;
   }
 }
 

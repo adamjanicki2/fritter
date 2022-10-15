@@ -42,6 +42,9 @@ const formsAndHandlers = {
   "create-comment": createComment,
   "delete-comment": deleteComment,
   "view-comments-by-parent": viewCommentsById,
+  "create-flag": createFlag,
+  "delete-flag": deleteFlag,
+  "view-flags-by-parent": viewFlagsByParentId,
 };
 
 // Attach handlers to forms

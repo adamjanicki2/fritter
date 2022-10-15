@@ -68,6 +68,17 @@ class FollowerCollection {
     });
     return deletedFollower !== null;
   }
+
+  /**
+   * Delete entries for user
+   *
+   * @param userId the id of the user to delete entries for
+   * @returns true if success else false
+   */
+  static async deleteMany(userId: Types.ObjectId | string): Promise<boolean> {
+    const deleted = await FollowerModel.deleteMany({ follower: userId });
+    return deleted !== null;
+  }
 }
 
 export default FollowerCollection;

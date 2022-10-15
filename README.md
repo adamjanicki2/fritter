@@ -112,9 +112,9 @@
 
 - `403` if user not logged in
 - `400` if incorrect parentType supplied
-- `404` if parent does not exist
+- `404` if parent does not exist or has already liked
 
-#### `DELETE /api/likes?likeId=LIKEID` - delete a like
+#### `DELETE /api/likes?parentId=PARENTID` - delete a like
 
 **Returns**
 
@@ -123,7 +123,7 @@
 **Throws**
 
 - `403` if user not logged in
-- `400` if no likeId supplied
+- `400` if no parentId supplied
 
 ---
 
@@ -156,7 +156,7 @@
 - `400` if incorrect parentType supplied
 - `404` if parent does not exist
 
-#### `DELETE /api/flags?flagId=FLAGID` - delete a flag
+#### `DELETE /api/flags?parentId=PARENTID` - delete a flag
 
 **Returns**
 
@@ -165,7 +165,7 @@
 **Throws**
 
 - `403` if user not logged in
-- `400` if no flagId supplied
+- `400` if no parentId supplied
 
 ---
 

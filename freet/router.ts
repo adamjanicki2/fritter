@@ -5,6 +5,9 @@ import * as userValidator from "../user/middleware";
 import * as freetValidator from "../freet/middleware";
 import * as util from "./util";
 import * as middleware from "../common/middleware";
+import CommentCollection from "../comment/collection";
+import FlagCollection from "../flag/collection";
+import LikeCollection from "../like/collection";
 
 const router = express.Router();
 
@@ -92,7 +95,12 @@ router.delete(
     freetValidator.isValidFreetModifier,
   ],
   async (req: Request, res: Response) => {
-    await FreetCollection.deleteOne(req.params.freetId);
+    const { freetId } = req.params;
+    await FreetCollection.deleteOne(freetId);
+    const filter = { parentId: freetId };
+    await CommentCollection.deleteMany(filter);
+    await FlagCollection.deleteMany(filter);
+    await LikeCollection.deleteMany(filter);
     res.status(200).json({
       message: "Your freet was deleted successfully.",
     });

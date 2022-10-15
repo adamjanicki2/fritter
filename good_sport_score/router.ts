@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import GoodSportScoreCollection from "./collection";
 import * as userValidator from "../user/middleware";
+import * as util from "./util";
 
 const router = express.Router();
 
@@ -16,4 +17,13 @@ router.get(
   }
 );
 
+router.get(
+  "/tempy/:content?",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const content = req.query.content;
+    return res
+      .status(200)
+      .json({ content, score: util.getSentimentScore(content as string) });
+  }
+);
 export { router as goodSportScoreRouter };

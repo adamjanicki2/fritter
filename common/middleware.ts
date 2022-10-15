@@ -1,9 +1,34 @@
 import CommentCollection from "../comment/collection";
 import type { Request, Response, NextFunction } from "express";
 import FreetCollection from "../freet/collection";
+import FlagCollection from "../flag/collection";
+import LikeCollection from "../like/collection";
 
 type RequestInformation = "params" | "body" | "query";
-type ParentType = "comment" | "freet";
+
+const COLLECTIONS = {
+  flag: FlagCollection.findByUserId,
+  like: LikeCollection.findByUserId,
+} as const;
+
+export const doesDuplicateExist = (
+  collection: "flag" | "like",
+  reqInfoType: RequestInformation
+) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const { parentId } = req[reqInfoType];
+    const doesExist = await COLLECTIONS[collection](
+      req.session.userId,
+      parentId
+    );
+    if (doesExist) {
+      return res
+        .status(404)
+        .json({ message: `There's already a ${collection} for this user!` });
+    }
+    next();
+  };
+};
 
 /**
  * Checks if the content of the freet/comment in req.body is valid, i.e not a stream of empty

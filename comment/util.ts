@@ -27,9 +27,6 @@ const constructCommentResponse = (
     }),
   };
   const { username } = commentCopy.authorId;
-  delete commentCopy.authorId;
-  delete commentCopy.parentId;
-  delete commentCopy.parentType;
   return {
     ...commentCopy,
     _id: commentCopy._id.toString(),

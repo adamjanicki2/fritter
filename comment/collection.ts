@@ -1,8 +1,9 @@
-import FreetCollection from "freet/collection";
-import GoodSportScoreCollection from "good_sport_score/collection";
+import FreetCollection from "../freet/collection";
+import GoodSportScoreCollection from "../good_sport_score/collection";
 import type { HydratedDocument, Types } from "mongoose";
 import type { Comment } from "./model";
 import CommentModel from "./model";
+import type { DeleteFilter } from "../common/util";
 
 class CommentCollection {
   /**
@@ -92,10 +93,10 @@ class CommentCollection {
   /**
    * Delete all the comments by the given author
    *
-   * @param {string} authorId - The id of author of freets
+   * @param {DeleteFilter} filter - filter to find by
    */
-  static async deleteMany(authorId: Types.ObjectId | string): Promise<void> {
-    await CommentModel.deleteMany({ authorId });
+  static async deleteMany(filter: DeleteFilter): Promise<void> {
+    await CommentModel.deleteMany(filter);
   }
 
   /**

@@ -27,7 +27,7 @@ router.get(
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.session.userId as string;
-    const exists = LikeCollection.findByUserId(
+    const exists = await LikeCollection.findByUserId(
       userId,
       req.query.parentId as string
     );
@@ -45,7 +45,7 @@ router.get(
  * @return {HydratedDocument<Like>} - The created like
  * @throws {403} - If the user is not logged in
  * @throws {400} if invalid parent type
- * @throws {404} if parent does not exist
+ * @throws {404} if parent does not exist, or already liked
  */
 router.post(
   "/",
@@ -53,6 +53,7 @@ router.post(
     userValidator.isUserLoggedIn,
     middleware.isValidParentType("body"),
     middleware.doesParentExist("body"),
+    middleware.doesDuplicateExist("like", "body"),
   ],
   async (req: Request, res: Response) => {
     const userId = req.session.userId as string;
@@ -75,15 +76,15 @@ router.post(
  * @throws {400} - if the like id is not supplied
  */
 router.delete(
-  "/:likeId?",
+  "/:parentId?",
   [
     userValidator.isUserLoggedIn,
-    middleware.isInfoSupplied("params", ["likeId"]),
+    middleware.isInfoSupplied("params", ["parentId"]),
   ],
   async (req: Request, res: Response) => {
-    const likeId = req.params.likeId;
+    const parentId = req.params.parentId;
     const userId = req.session.userId as string;
-    await LikeCollection.deleteOne(likeId);
+    await LikeCollection.deleteOne(userId, parentId);
     res.status(200).json({
       message: "Your like was deleted successfully.",
     });
