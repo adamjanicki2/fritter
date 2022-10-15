@@ -57,14 +57,12 @@ class FollowerCollection {
   /**
    * Delete a Follower by id
    *
-   * @param {string} followerId - The id of Follower to delete
+   * @param {string} followee - The id of followee to unfollow
    * @return {Promise<Boolean>} - true if the Follower has been deleted, false otherwise
    */
-  static async deleteOne(
-    followerId: Types.ObjectId | string
-  ): Promise<boolean> {
+  static async deleteOne(followee: Types.ObjectId | string): Promise<boolean> {
     const deletedFollower = await FollowerModel.deleteOne({
-      _id: followerId,
+      followee,
     });
     return deletedFollower !== null;
   }

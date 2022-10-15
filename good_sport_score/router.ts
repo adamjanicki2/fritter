@@ -13,17 +13,14 @@ router.get(
   [userValidator.isUserLoggedIn],
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.session.userId as string;
-    return res.status(200).json(GoodSportScoreCollection.findByUserId(userId));
+    return res
+      .status(200)
+      .json(
+        util.formatScoreResponse(
+          await GoodSportScoreCollection.findByUserId(userId)
+        )
+      );
   }
 );
 
-router.get(
-  "/tempy/:content?",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const content = req.query.content;
-    return res
-      .status(200)
-      .json({ content, score: util.getSentimentScore(content as string) });
-  }
-);
 export { router as goodSportScoreRouter };

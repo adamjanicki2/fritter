@@ -7,7 +7,8 @@ export const doesFollow = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { follower, followee } = req.params;
+  const { followee } = req.body;
+  const follower = req.session.userId;
   const validFormat =
     Types.ObjectId.isValid(follower) && Types.ObjectId.isValid(followee);
   const exists =

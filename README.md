@@ -60,7 +60,6 @@
 
 **Body**
 
-- `follower` _{string}_ - the id of the follower
 - `followee` _{string}_ - the id of the followee
 
 **Returns**
@@ -70,9 +69,9 @@
 **Throws**
 
 - `403` if user not logged in
-- `404` if if user a already follows user b
+- `404` if the signed in user already follows user b
 
-#### `DELETE /api/followers?followerId=FOLLOWERID` - delete a follower
+#### `DELETE /api/followers?followee=FOLLOWEEID` - delete a follower
 
 **Returns**
 
@@ -81,7 +80,7 @@
 **Throws**
 
 - `403` if user not logged in
-- `400` if no followerId supplied
+- `400` if no followee id supplied
 
 ---
 

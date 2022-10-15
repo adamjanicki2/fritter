@@ -45,6 +45,13 @@ const formsAndHandlers = {
   "create-flag": createFlag,
   "delete-flag": deleteFlag,
   "view-flags-by-parent": viewFlagsByParentId,
+  "create-like": createLike,
+  "delete-like": deleteLike,
+  "view-likes-by-parent": viewLikesByParentId,
+  "create-follower": createFollower,
+  "delete-follower": deleteFollower,
+  "view-user-follower-stats": viewFollowerStats,
+  "get-score": getScore,
 };
 
 // Attach handlers to forms

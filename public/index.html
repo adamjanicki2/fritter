@@ -27,6 +27,7 @@
         <!-- BEGIN CUSTOM TESTING -->
 
         <!-- COMMENTS -->
+        <h2>COMMENT ENDPOINTS</h2>
         <form id="create-comment">
           <h3>Create Comment</h3>
           <div>
@@ -61,6 +62,7 @@
         </form>
         <hr/>
         <!-- FLAGS -->
+        <h2>FLAG ENDPOINTS</h2>
         <form id="create-flag">
           <h3>Create Flag</h3>
           <div>
@@ -74,12 +76,12 @@
           <input type="submit" value="Flag">
         </form>
         <form id="view-flags-by-parent">
-          <h3>View Flags By Parent</h3>
+          <h3>Has signed-in user flagged parent</h3>
           <div>
             <label for="parentId">Parent ID:</label>
             <input id="parentId" name="parentId">
           </div>
-          <input type="submit" value="View Flags By Parent">
+          <input type="submit" value="Check">
         </form>
         <form id="delete-flag">
           <h3>Delete Flag</h3>
@@ -90,7 +92,73 @@
           <input type="submit" value="Delete Flag">
         </form>
         <hr />
+        <!-- LIKES -->
+        <h2>LIKE ENDPOINTS</h2>
+        <form id="create-like">
+          <h3>Create Like</h3>
+          <div>
+            <label for="parentId">Parent ID:</label>
+            <input id="parentId" name="parentId">
+          </div>
+          <div>
+            <label for="parentType">Parent Type ("freet" | "comment"):</label>
+            <input id="parentType" name="parentType">
+          </div>
+          <input type="submit" value="Like">
+        </form>
+        <form id="view-likes-by-parent">
+          <h3>Has signed-in user liked parent</h3>
+          <div>
+            <label for="parentId">Parent ID:</label>
+            <input id="parentId" name="parentId">
+          </div>
+          <input type="submit" value="Check">
+        </form>
+        <form id="delete-like">
+          <h3>Delete Like</h3>
+          <div>
+            <label for="id">Parent ID:</label>
+            <input id="id" name="id">
+          </div>
+          <input type="submit" value="Delete Like">
+        </form>
+        <hr />
+        <!-- FOLLOWER -->
+        <h2>FOLLOWER ENDPOINTS</h2>
+        <form id="create-follower">
+          <h3>Create Follower</h3>
+          <div>
+            <label for="followee">Followee's user ID:</label>
+            <input id="followee" name="followee">
+          </div>
+          <input type="submit" value="Follow">
+        </form>
+        <form id="view-user-follower-stats">
+          <h3>View user follower statistics</h3>
+          <div>
+            <label for="userId">User ID:</label>
+            <input id="userId" name="userId">
+          </div>
+          <input type="submit" value="Check">
+        </form>
+        <form id="delete-follower">
+          <h3>Delete Follower</h3>
+          <div>
+            <label for="id">Followee ID:</label>
+            <input id="id" name="id">
+          </div>
+          <input type="submit" value="Unfollow">
+        </form>
+        <hr />
+        <!-- GOOD SPORT SCORE -->
+        <h2>GOOD SPORT SCORE ENDPOINTS</h2>
+        <form id="get-score">
+          <h3>View Your Good Sport Score</h3>
+          <input type="submit" value="Get Score">
+        </form>
+        <hr />
         <!-- BEGIN STOCK TESTING -->
+        <h2>STOCK ENDPOINTS</h2>
         <form id="create-user">
           <h3>Create User</h3>
           <div>

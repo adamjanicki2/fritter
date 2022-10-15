@@ -14,7 +14,7 @@ router.get(
     const userId = req.query.userId;
     return res
       .status(200)
-      .json(FollowerCollection.getFollowerStatistics(userId as string));
+      .json(await FollowerCollection.getFollowerStatistics(userId as string));
   }
 );
 
@@ -22,16 +22,19 @@ router.post(
   "/",
   [userValidator.isUserLoggedIn, middleware.doesFollow],
   async (req: Request, res: Response, next: NextFunction) => {
-    const { follower, followee } = req.body;
-    return res.status(201).json(FollowerCollection.addOne(follower, followee));
+    const follower = req.session.userId;
+    const { followee } = req.body;
+    return res
+      .status(201)
+      .json(await FollowerCollection.addOne(follower, followee));
   }
 );
 
 router.delete(
-  "/:followerId",
+  "/:followee",
   [userValidator.isUserLoggedIn],
   async (req: Request, res: Response, next: NextFunction) => {
-    await FollowerCollection.deleteOne(req.params.followerId);
+    await FollowerCollection.deleteOne(req.params.followee);
     return res.status(200).json({
       message: "Your follower was deleted successfully.",
     });

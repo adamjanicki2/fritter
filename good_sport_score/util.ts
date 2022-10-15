@@ -1,10 +1,33 @@
 // a lot of NLP preprocessing utils here
+import { HydratedDocument, Types } from "mongoose";
 import { WordTokenizer, SentimentAnalyzer, PorterStemmer } from "natural";
 import { removeStopwords } from "stopword";
+import { GoodSportScore, PopulatedGoodSportScore } from "./model";
 
 // function to tokenize
 const tokenizer = new WordTokenizer();
 const analyzer = new SentimentAnalyzer("English", PorterStemmer, "afinn");
+
+type ScoreResponse = {
+  score: number;
+  userId: Types.ObjectId | string;
+};
+
+/**
+ * Get the score response
+ *
+ * @param score score document
+ * @returns the formatted score
+ */
+export const formatScoreResponse = (
+  score: HydratedDocument<GoodSportScore>
+): ScoreResponse => {
+  const { _id: userId } = score.userId;
+  return {
+    userId,
+    score: score.score,
+  };
+};
 
 /**
  * Calculate sentiment score for a piece of text
