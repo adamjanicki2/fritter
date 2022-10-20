@@ -12,7 +12,7 @@
 
 **Throws**
 
-- `400` if no parentId given
+- `400` if no parentId given or invalid Mongo ID length
 
 #### `POST /api/comments` - Post a comment
 
@@ -29,7 +29,7 @@
 
 **Throws**
 
-- `400` if incorrent parent type supplied
+- `400` if incorrent parent type supplied or invalid Mongo ID length
 - `403` if user not logged in
 - `404` if parent does not exist
 - `413`if content is too long
@@ -42,7 +42,7 @@
 
 **Throws**
 
-- `400` if no commentId supplied
+- `400` if no commentId supplied or invalid Mongo ID length
 
 ---
 
@@ -54,7 +54,7 @@
 
 **Throws**
 
-- `400` if userId not supplied
+- `400` if userId not supplied or invalid Mongo ID length
 
 #### `POST /api/followers` - Follow a user
 
@@ -80,7 +80,7 @@
 **Throws**
 
 - `403` if user not logged in
-- `400` if no followee id supplied
+- `400` if no followee id supplied or invalid Mongo ID length
 
 ---
 
@@ -92,7 +92,7 @@
 
 **Throws**
 
-- `400` if parentId not provided
+- `400` if parentId not provided or invalid Mongo ID length
 - `403` if user not signed in
 - `404` if parent does not exist
 
@@ -110,7 +110,7 @@
 **Throws**
 
 - `403` if user not logged in
-- `400` if incorrect parentType supplied
+- `400` if incorrect parentType supplied or invalid Mongo ID length
 - `404` if parent does not exist or has already liked
 
 #### `DELETE /api/likes?parentId=PARENTID` - delete a like
@@ -122,7 +122,7 @@
 **Throws**
 
 - `403` if user not logged in
-- `400` if no parentId supplied
+- `400` if no parentId supplied or invalid Mongo ID length
 
 ---
 
@@ -134,7 +134,7 @@
 
 **Throws**
 
-- `400` if parentId not provided
+- `400` if parentId not provided or invalid Mongo ID length
 - `403` if user not signed in
 - `404` if parent does not exist
 
@@ -152,7 +152,7 @@
 **Throws**
 
 - `403` if user not logged in
-- `400` if incorrect parentType supplied
+- `400` if incorrect parentType supplied or invalid Mongo ID length
 - `404` if parent does not exist
 
 #### `DELETE /api/flags?parentId=PARENTID` - delete a flag
@@ -164,7 +164,7 @@
 **Throws**
 
 - `403` if user not logged in
-- `400` if no parentId supplied
+- `400` if no parentId supplied or invalid Mongo ID length
 
 ---
 
@@ -179,8 +179,6 @@
 - `403` if user is not logged in
 
 ---
-
-### Starter code endpoints
 
 #### `GET /`
 
@@ -202,6 +200,26 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `400` if `author` is not given
 - `404` if `author` is not a recognized username of any user
+
+#### `GET /api/freets/feed` - Get feed freets for the user
+
+**Returns**
+
+- An array of freets that are published by the user's followees
+
+**Throws**
+
+- `403` if user not logged in
+
+#### `GET /api/freets/explore` - Get explore freets for the user
+
+**Returns**
+
+- An array of freets that are published by users whom the user doesn't follow
+
+**Throws**
+
+- `403` if user not logged in
 
 #### `POST /api/freets` - Create a new freet
 

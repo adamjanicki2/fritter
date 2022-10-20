@@ -14,6 +14,8 @@ type FreetResponse = {
   flags: number;
 };
 
+export type MongoIncludesFilter = "$in" | "$nin";
+
 /**
  * Transform a raw Freet object from the database into an object
  * with all the information needed by the frontend

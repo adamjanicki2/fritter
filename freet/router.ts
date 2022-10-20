@@ -53,6 +53,46 @@ router.get(
 );
 
 /**
+ * Get freets by followers
+ *
+ * @name GET /api/freets/feed
+ *
+ * @return {FreetResponse[]} - An array of freets created by user with id, authorId
+ * @throws {403} - If no user is not signed in
+ *
+ */
+router.get(
+  "/feed",
+  [userValidator.isUserLoggedIn],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req.session.userId as string) ?? "";
+    const freets = await FreetCollection.findByFollowees(userId, "$in");
+    const response = freets.map(util.constructFreetResponse);
+    return res.status(200).json(response);
+  }
+);
+
+/**
+ * Get freets by followers
+ *
+ * @name GET /api/freets/feed
+ *
+ * @return {FreetResponse[]} - An array of freets created by user with id, authorId
+ * @throws {403} - If no user is not signed in
+ *
+ */
+router.get(
+  "/explore",
+  [userValidator.isUserLoggedIn],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req.session.userId as string) ?? "";
+    const freets = await FreetCollection.findByFollowees(userId, "$nin");
+    const response = freets.map(util.constructFreetResponse);
+    return res.status(200).json(response);
+  }
+);
+
+/**
  * Create a new freet.
  *
  * @name POST /api/freets

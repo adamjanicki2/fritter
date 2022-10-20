@@ -13,7 +13,7 @@ const router = express.Router();
  * @param {string} parentId the id of the item
  *
  * @return {boolean} - whether the user has flaggedd an item
- * @throws {400} - If parentId is not given
+ * @throws {400} - If parentId is not given or wrong length
  * @throws {403} if user is not logged in
  * @throws {404} if parent does not exist
  *
@@ -23,7 +23,7 @@ router.get(
   [
     userValidator.isUserLoggedIn,
     middleware.isInfoSupplied("query", ["parentId"]),
-    middleware.doesParentExist("query"),
+    middleware.isInfoValidId("query", ["parentId"]),
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.session.userId as string;
@@ -51,6 +51,8 @@ router.post(
   "/",
   [
     userValidator.isUserLoggedIn,
+    middleware.isInfoSupplied("body", ["parentId"]),
+    middleware.isInfoValidId("body", ["parentId"]),
     middleware.isValidParentType("body"),
     middleware.doesParentExist("body"),
     middleware.doesDuplicateExist("flag", "body"),
@@ -73,13 +75,14 @@ router.post(
  *
  * @return {string} - A success message
  * @throws {403} - If the user is not logged in or is not the flagger
- * @throws {400} - if the parent id is not supplied
+ * @throws {400} - if the parent id is not supplied or invalid id length
  */
 router.delete(
   "/:parentId?",
   [
     userValidator.isUserLoggedIn,
     middleware.isInfoSupplied("params", ["parentId"]),
+    middleware.isInfoValidId("params", ["parentId"]),
   ],
   async (req: Request, res: Response) => {
     const parentId = req.params.parentId;

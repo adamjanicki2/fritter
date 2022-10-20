@@ -1,7 +1,9 @@
 import type { HydratedDocument, Types } from "mongoose";
 import type { Freet } from "./model";
+import type { MongoIncludesFilter } from "./util";
 import FreetModel from "./model";
 import UserCollection from "../user/collection";
+import FollowerCollection from "../follower/collection";
 import GoodSportScoreCollection from "../good_sport_score/collection";
 
 type FreetStat = "likes" | "flags" | "comments";
@@ -15,7 +17,7 @@ class FreetCollection {
   static async findById(
     freetId: Types.ObjectId | string
   ): Promise<HydratedDocument<Freet>> {
-    return (await FreetModel.findById(freetId)).populated("authorId");
+    return (await FreetModel.findById(freetId)).populate("authorId");
   }
   /**
    * Add a freet to the collection
@@ -63,6 +65,26 @@ class FreetCollection {
   static async findAll(): Promise<Array<HydratedDocument<Freet>>> {
     // Retrieves freets and sorts them from most to least recent
     return FreetModel.find({}).sort({ dateModified: -1 }).populate("authorId");
+  }
+
+  /**
+   * Get feed of freets for a user
+   *
+   * @param userId id of the user
+   * @param followerFilter whether to get posts from only followers or only not followers
+   * @returns list of feed freets
+   */
+  static async findByFollowees(
+    userId: Types.ObjectId | string,
+    followerFilter: MongoIncludesFilter
+  ): Promise<Array<HydratedDocument<Freet>>> {
+    const followees = (await FollowerCollection.getFollowees(userId)).map(
+      (followee) => followee.followee
+    );
+    followerFilter === "$nin" && followees.push(userId as Types.ObjectId);
+    return await FreetModel.find({
+      authorId: { [followerFilter]: followees },
+    }).populate("authorId");
   }
 
   /**

@@ -1,7 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import CommentCollection from "./collection";
-import FreetCollection from "../freet/collection";
 import * as userValidator from "../user/middleware";
 import * as util from "./util";
 import * as middleware from "../common/middleware";
@@ -22,7 +21,10 @@ const router = express.Router();
  */
 router.get(
   "/",
-  [middleware.isInfoSupplied("query", ["parentId"])],
+  [
+    middleware.isInfoSupplied("query", ["parentId"]),
+    middleware.isInfoValidId("query", ["parentId"]),
+  ],
   async (req: Request, res: Response, next: NextFunction) => {
     const comments = await CommentCollection.findByParentId(
       req.query.parentId as string
@@ -50,6 +52,8 @@ router.post(
   "/",
   [
     userValidator.isUserLoggedIn,
+    middleware.isInfoSupplied("body", ["parentId"]),
+    middleware.isInfoValidId("body", ["parentId"]),
     middleware.isValidContent,
     middleware.isValidParentType("body"),
     middleware.doesParentExist("body"),
@@ -85,6 +89,8 @@ router.delete(
   "/:commentId?",
   [
     userValidator.isUserLoggedIn,
+    middleware.isInfoSupplied("params", ["commentId"]),
+    middleware.isInfoValidId("params", ["commentId"]),
     commentValidator.doesCommentExist,
     commentValidator.isValidCommentModifier,
   ],

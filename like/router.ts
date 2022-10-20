@@ -23,7 +23,7 @@ router.get(
   [
     userValidator.isUserLoggedIn,
     middleware.isInfoSupplied("query", ["parentId"]),
-    middleware.doesParentExist("query"),
+    middleware.isInfoValidId("query", ["parentId"]),
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.session.userId as string;
@@ -51,6 +51,8 @@ router.post(
   "/",
   [
     userValidator.isUserLoggedIn,
+    middleware.isInfoSupplied("body", ["parentId"]),
+    middleware.isInfoValidId("body", ["parentId"]),
     middleware.isValidParentType("body"),
     middleware.doesParentExist("body"),
     middleware.doesDuplicateExist("like", "body"),
@@ -80,6 +82,7 @@ router.delete(
   [
     userValidator.isUserLoggedIn,
     middleware.isInfoSupplied("params", ["parentId"]),
+    middleware.isInfoValidId("params", ["parentId"]),
   ],
   async (req: Request, res: Response) => {
     const parentId = req.params.parentId;

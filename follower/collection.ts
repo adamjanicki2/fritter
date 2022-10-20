@@ -77,6 +77,18 @@ class FollowerCollection {
     const deleted = await FollowerModel.deleteMany({ follower: userId });
     return deleted !== null;
   }
+
+  /**
+   * get followees for user
+   *
+   * @param userId the id of the user to find followers for
+   * @returns list of followers
+   */
+  static async getFollowees(
+    userId: Types.ObjectId | string
+  ): Promise<Array<HydratedDocument<Follower>>> {
+    return FollowerModel.find({ follower: userId });
+  }
 }
 
 export default FollowerCollection;

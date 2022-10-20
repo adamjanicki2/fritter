@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import FreetCollection from "../freet/collection";
 import FlagCollection from "../flag/collection";
 import LikeCollection from "../like/collection";
+import { Types } from "mongoose";
 
 type RequestInformation = "params" | "body" | "query";
 
@@ -94,6 +95,30 @@ export const isInfoSupplied = (
   };
 };
 
+/**
+ * Check if the appropriate params are valid mongo ids
+ *
+ * @param reqInfoType either params or query or body
+ * @param fields the fields to check if they are valid ids
+ * @returns a callback to use as middleware
+ */
+export const isInfoValidId = (
+  reqInfoType: "body" | "params" | "query",
+  fields: string[]
+) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const information = req[reqInfoType];
+    for (const field of fields) {
+      if (!Types.ObjectId.isValid(information[field])) {
+        return res.status(400).json({
+          message: `field '${field}' is not a valid 12-byte Mongo ID in req.${reqInfoType}`,
+        });
+      }
+    }
+    next();
+  };
+};
+
 const PARENT_TO_FIND_OPERATION = {
   comment: CommentCollection.findById,
   freet: FreetCollection.findById,
@@ -102,19 +127,18 @@ const PARENT_TO_FIND_OPERATION = {
 /**
  * Determine whether parent exists
  *
- * @param parentType
  * @param reqInfoType
  * @returns callback for validation
  */
 export const doesParentExist = (reqInfoType: "body" | "params" | "query") => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const id = req[reqInfoType].parentId as string;
-    const freet = PARENT_TO_FIND_OPERATION["freet"](id);
-    const comment = PARENT_TO_FIND_OPERATION["comment"](id);
-    if (!freet && !comment) {
-      return res
-        .status(404)
-        .json({ message: `parentId: '${id}' does not exist!` });
+    const parentType = req[reqInfoType].parentType as "comment" | "freet";
+    const item = await PARENT_TO_FIND_OPERATION[parentType](id);
+    if (!item) {
+      return res.status(404).json({
+        message: `parentId: '${id}' does not exist with parentType: '${parentType}'`,
+      });
     }
     next();
   };
