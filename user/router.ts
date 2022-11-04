@@ -12,6 +12,10 @@ import FlagCollection from "../flag/collection";
 
 const router = express.Router();
 
+router.get("/session", (req: Request, res: Response) => {
+  res.json({ session: req.session });
+});
+
 /**
  * Sign in user.
  *
