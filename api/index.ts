@@ -47,7 +47,7 @@ const app = express();
 app.use(customMiddleware);
 
 // Declare the root directory
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, "../public"), { index: false }));
 
 // Set the port
 app.set("port", process.env.PORT || 3000);
