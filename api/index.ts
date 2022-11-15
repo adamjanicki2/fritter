@@ -16,6 +16,7 @@ import { followerRouter } from "../follower/router";
 import { likeRouter } from "../like/router";
 import { goodSportScoreRouter } from "../good_sport_score/router";
 import { flagRouter } from "../flag/router";
+import fs from "fs";
 
 // Load environmental variables
 dotenv.config({});
@@ -44,7 +45,7 @@ mongoose.connection.on("error", (err) => {
 const app = express();
 
 // Declare the root directory
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, "../public"), { index: false }));
 
 // View engine setup
 app.engine("html", engine({ extname: ".html", defaultLayout: false }));
@@ -75,11 +76,6 @@ app.use(
 // This makes sure that if a user is logged in, they still exist in the database
 app.use(userValidator.isCurrentSessionUserExists);
 
-// GET home page
-app.get("/", (req: Request, res: Response) => {
-  res.render("index");
-});
-
 // Add routers from routes folder
 app.use("/api/users", userRouter);
 app.use("/api/freets", freetRouter);
@@ -88,6 +84,25 @@ app.use("/api/flags", flagRouter);
 app.use("/api/followers", followerRouter);
 app.use("/api/likes", likeRouter);
 app.use("/api/goodSportScores", goodSportScoreRouter);
+app.get("/api/ogTitle", (req, res) => {
+  console.log({
+    headers: req.headers,
+    url: req.url,
+    originalUrl: req.originalUrl,
+    query: req.query,
+    cookies: req.cookies,
+  });
+  return res.send("Hello World");
+});
+
+// GET home page
+app.get("/*", (req: Request, res: Response) => {
+  const index = fs.readFileSync(
+    path.join(__dirname, "../public/index.html"),
+    "utf8"
+  );
+  return res.send(index);
+});
 
 // Catch all the other routes and display error message
 app.all("*", (req: Request, res: Response) => {
