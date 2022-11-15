@@ -80,7 +80,10 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // Declare the root directory
-app.use(express.static(path.join(__dirname, "../public"), { index: false }));
+app.use(express.static(path.join(__dirname, "../public/scripts")));
+app.use(express.static(path.join(__dirname, "../public/stylesheets")));
+app.use(express.static(path.join(__dirname, "../public/error.html")));
+app.use(express.static(path.join(__dirname, "../public/favicon.ico")));
 
 // Add routers from routes folder
 app.use("/api/users", userRouter);
