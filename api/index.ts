@@ -1,7 +1,6 @@
 // This file must be in the /api folder for Vercel to detect it as a serverless function
 import type { Request, Response } from "express";
 import express from "express";
-import { engine } from "express-handlebars";
 import session from "express-session";
 import path from "path";
 import logger from "morgan";
@@ -16,6 +15,8 @@ import { followerRouter } from "../follower/router";
 import { likeRouter } from "../like/router";
 import { goodSportScoreRouter } from "../good_sport_score/router";
 import { flagRouter } from "../flag/router";
+import { customMiddleware } from "../helpers/util";
+import fs from "fs";
 
 // Load environmental variables
 dotenv.config({});
@@ -43,13 +44,10 @@ mongoose.connection.on("error", (err) => {
 // Initalize an express app
 const app = express();
 
+app.use(customMiddleware);
+
 // Declare the root directory
 app.use(express.static(path.join(__dirname, "../public")));
-
-// View engine setup
-app.engine("html", engine({ extname: ".html", defaultLayout: false }));
-app.set("view engine", "html");
-app.set("views", path.join(__dirname, "../public"));
 
 // Set the port
 app.set("port", process.env.PORT || 3000);
@@ -77,7 +75,11 @@ app.use(userValidator.isCurrentSessionUserExists);
 
 // GET home page
 app.get("/", (req: Request, res: Response) => {
-  res.render("index");
+  const index = fs.readFileSync(
+    path.join(__dirname, "../public/index.html"),
+    "utf8"
+  );
+  res.send(index);
 });
 
 // Add routers from routes folder
