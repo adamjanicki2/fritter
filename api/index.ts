@@ -46,9 +46,6 @@ const app = express();
 
 app.use(customMiddleware);
 
-// Declare the root directory
-app.use(express.static(path.join(__dirname, "../public"), { index: false }));
-
 // Set the port
 app.set("port", process.env.PORT || 3000);
 
@@ -78,9 +75,12 @@ app.get("/", (req: Request, res: Response) => {
   res.send(
     fs
       .readFileSync(path.join(__dirname, "../public/index.html"), "utf8")
-      .replace("__OG_TITLE__", "NON ASYNC TITLE")
+      .replace(/__OG_TITLE__/g, "NON ASYNC TITLE")
   );
 });
+
+// Declare the root directory
+app.use(express.static(path.join(__dirname, "../public"), { index: false }));
 
 // Add routers from routes folder
 app.use("/api/users", userRouter);
