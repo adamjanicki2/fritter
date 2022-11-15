@@ -87,16 +87,13 @@ app.use("/api/goodSportScores", goodSportScoreRouter);
 
 // GET home page
 app.get("/*", (req: Request, res: Response) => {
-  fs.readFile(
+  let index = fs.readFileSync(
     path.join(__dirname, "../public/index.html"),
-    "utf8",
-    (err, data) => {
-      if (err) {
-        return res.status(500).send("Error loading index.html");
-      }
-      res.send(data.replace("__OG_TITLE__", "CUSTOM TITLE"));
-    }
+    "utf8"
   );
+  index = index.replace("__OG_TITLE__", "CUSTOM TITLE");
+  fs.writeFileSync(path.join(__dirname, "../public/index.html"), index);
+  return res.send(index);
 });
 
 // Catch all the other routes and display error message
