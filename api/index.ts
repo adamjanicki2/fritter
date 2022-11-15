@@ -77,13 +77,6 @@ app.use(
 app.use(userValidator.isCurrentSessionUserExists);
 
 // Add routers from routes folder
-app.use("/api/users", userRouter);
-app.use("/api/freets", freetRouter);
-app.use("/api/comments", commentRouter);
-app.use("/api/flags", flagRouter);
-app.use("/api/followers", followerRouter);
-app.use("/api/likes", likeRouter);
-app.use("/api/goodSportScores", goodSportScoreRouter);
 app.get("/api/ogTitle", (req, res) => {
   console.log({
     headers: req.headers,
@@ -94,6 +87,23 @@ app.get("/api/ogTitle", (req, res) => {
   });
   return res.send("Hello World");
 });
+app.get("/api/ogImage", (req, res) => {
+  console.log({
+    headers: req.headers,
+    url: req.url,
+    originalUrl: req.originalUrl,
+    query: req.query,
+    cookies: req.cookies,
+  });
+  return res.sendFile(path.join(__dirname, "../public/favicon.ico"));
+});
+app.use("/api/users", userRouter);
+app.use("/api/freets", freetRouter);
+app.use("/api/comments", commentRouter);
+app.use("/api/flags", flagRouter);
+app.use("/api/followers", followerRouter);
+app.use("/api/likes", likeRouter);
+app.use("/api/goodSportScores", goodSportScoreRouter);
 
 // GET home page
 app.get("/*", (req: Request, res: Response) => {
