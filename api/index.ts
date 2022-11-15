@@ -75,11 +75,11 @@ app.use(userValidator.isCurrentSessionUserExists);
 
 // GET home page
 app.get("/", (req: Request, res: Response) => {
-  const index = fs.readFileSync(
-    path.join(__dirname, "../public/index.html"),
-    "utf8"
+  res.send(
+    fs
+      .readFileSync(path.join(__dirname, "../public/index.html"), "utf8")
+      .replace("__OG_TITLE__", "NON ASYNC TITLE")
   );
-  res.send(index);
 });
 
 // Add routers from routes folder
