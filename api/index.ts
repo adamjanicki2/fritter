@@ -16,6 +16,7 @@ import { followerRouter } from "../follower/router";
 import { likeRouter } from "../like/router";
 import { goodSportScoreRouter } from "../good_sport_score/router";
 import { flagRouter } from "../flag/router";
+import fs from "fs";
 
 // Load environmental variables
 dotenv.config({});
@@ -44,7 +45,7 @@ mongoose.connection.on("error", (err) => {
 const app = express();
 
 // Declare the root directory
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, "../public"), { index: false }));
 
 // View engine setup
 app.engine("html", engine({ extname: ".html", defaultLayout: false }));
@@ -75,11 +76,6 @@ app.use(
 // This makes sure that if a user is logged in, they still exist in the database
 app.use(userValidator.isCurrentSessionUserExists);
 
-// GET home page
-app.get("/", (req: Request, res: Response) => {
-  res.render("index");
-});
-
 // Add routers from routes folder
 app.use("/api/users", userRouter);
 app.use("/api/freets", freetRouter);
@@ -88,6 +84,20 @@ app.use("/api/flags", flagRouter);
 app.use("/api/followers", followerRouter);
 app.use("/api/likes", likeRouter);
 app.use("/api/goodSportScores", goodSportScoreRouter);
+
+// GET home page
+app.get("/*", (req: Request, res: Response) => {
+  fs.readFile(
+    path.join(__dirname, "../public/index.html"),
+    "utf8",
+    (err, data) => {
+      if (err) {
+        return res.status(500).send("Error loading index.html");
+      }
+      res.send(data.replace("__OG_TITLE__", "CUSTOM TITLE"));
+    }
+  );
+});
 
 // Catch all the other routes and display error message
 app.all("*", (req: Request, res: Response) => {
