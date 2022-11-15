@@ -84,15 +84,23 @@ app.use("/api/flags", flagRouter);
 app.use("/api/followers", followerRouter);
 app.use("/api/likes", likeRouter);
 app.use("/api/goodSportScores", goodSportScoreRouter);
+app.get("/api/ogTitle", (req, res) => {
+  console.log({
+    headers: req.headers,
+    url: req.url,
+    originalUrl: req.originalUrl,
+    query: req.query,
+    cookies: req.cookies,
+  });
+  return res.send("Hello World");
+});
 
 // GET home page
 app.get("/*", (req: Request, res: Response) => {
-  let index = fs.readFileSync(
+  const index = fs.readFileSync(
     path.join(__dirname, "../public/index.html"),
     "utf8"
   );
-  index = index.replace("__OG_TITLE__", "CUSTOM TITLE");
-  fs.writeFileSync(path.join(__dirname, "../public/index.html"), index);
   return res.send(index);
 });
 
